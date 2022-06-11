@@ -4,6 +4,7 @@ const app = express();
 const {PORT} = process.env;
 const hbs = require('hbs')
 const { urlencoded } = require('express');
+const morgan = require('morgan');
 
 const userRoute = require('./route/user');
 const homeRoute = require('./route/home');
