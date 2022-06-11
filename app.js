@@ -14,5 +14,7 @@ app.use(morgan('tiny'));
 //template engine
 app.set('view engine', 'hbs');
 
+app.use('/', homeRoute);
+app.use('/user', userRoute);
 
 module.exports = app;
