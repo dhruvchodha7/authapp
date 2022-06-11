@@ -1,5 +1,5 @@
 const express = require('express');
-const { router } = require("../app");
+const router  = express.Router();
 const { index, dashboard } = require('../controller/homeController');
 
 router.route('/').get(index);
