@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { registerScreen, register,  login } = require('../controller/userController')
+const { registerScreen, register,  login, loginScreen } = require('../controller/userController')
 
 router.route('/register').get(registerScreen);
 router.route('/register').post(register);

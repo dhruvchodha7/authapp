@@ -8,7 +8,9 @@ require('dotenv').config();
 
 
 const createToken = (id) => {
-    return jwt.sign({id}, process.env.JWT_SECRET)
+    return jwt.sign({id}, process.env.JWT_SECRET,{
+        expiresIn: process.env.JWT_EXPIRY
+    });
 }
 
 exports.register = async(req, res) => {
@@ -38,15 +40,25 @@ exports.login = async(req, res)=>{
     try {
         const { email, password } = req.body;
         const existingUser = await User.findOne({email: email});
+        console.log(existingUser);
         if(existingUser){
-            const match = await bcrypt.compare(password, existingUser.password);
+            console.log(password);
+            console.log(existingUser.password);
+
+            const match = bcrypt.compare(password, existingUser.password);
+            console.log(match);
             if(match){
                 const token = createToken(existingUser.id)
-                
+                res.cookie('access-token', token)
+                res.status(200).json({
+                    success: true,
+                    msg: "User Logged In"
+                })
                 res.redirect('/dashboard');
             }else{
                 console.log('Invalid Password');
             }
+            
         }else{
             console.log('User not registered ')
         }

@@ -1,22 +1,12 @@
+const {loginRequired} = require('../config/JWT')
+
+
+
 exports.index = (req, res) => {
-    
-    try {
-        res.status(200).render('index').json({
-            success: true,
-        });
-        
-    } catch (error) {
-        console.log(error);
-        
-    }
+    res.render('index')
 }
 
 exports.dashboard = (req, res) => {
-    try {
-        res.status(200).render('dashboard').json({
-            success: true,
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
+    res.render('dashboard')
+};
+
