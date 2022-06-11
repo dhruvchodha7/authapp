@@ -1,16 +1,14 @@
 const User = require('../model/user')
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookie = require('cookie-parser');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 
-exports.login = (req, res) => {
-    try {
-        res.status(200).render('login').json({
-            success: true,
-        })
-    } catch (error) {
-        console.log(error);
-    }
+const createToken = (id) => {
+    return jwt.sign({id}, process.env.JWT_SECRET)
 }
 
 exports.register = async(req, res) => {
@@ -34,4 +32,29 @@ exports.register = async(req, res) => {
 
 exports.registerScreen = async(req, res)=>{
     res.render('register');
+}
+
+exports.login = async(req, res)=>{
+    try {
+        const { email, password } = req.body;
+        const existingUser = await User.findOne({email: email});
+        if(existingUser){
+            const match = await bcrypt.compare(password, existingUser.password);
+            if(match){
+                const token = createToken(existingUser.id)
+                
+                res.redirect('/dashboard');
+            }else{
+                console.log('Invalid Password');
+            }
+        }else{
+            console.log('User not registered ')
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+exports.loginScreen = (req, res) => {
+    res.render('login');
 }
