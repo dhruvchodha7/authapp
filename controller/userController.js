@@ -3,8 +3,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookie = require('cookie-parser');
-const nodemailer = require('nodemailer');
-const mailHelper = require('../config/mailHelp');
+const mailHelper = require('../config/mailHelper');
 require('dotenv').config();
 
 
@@ -26,12 +25,17 @@ exports.register = async(req, res) => {
             emailToken: crypto.randomBytes(64).toString('hex'),
             isVerified: false,
         })
-        const newUser = await user.save();
-        res.redirect('/user/login')
-        var options = {
+        await user.save();
+        
+        res.status(200).json({
+            name: user.name,
+            email: user.email,
+            success: true,
+            message: "user successfully registered"
+        }) 
+        user.password = undefined;
+        mailHelper(user, req);
 
-        }
-        mailHelper(req,user);
     }catch(error){
         console.log(error);
     }
@@ -70,4 +74,41 @@ exports.login = async(req, res)=>{
 
 exports.loginScreen = (req, res) => {
     res.render('login');
+}
+
+exports.listUsers = async(req, res) => {
+    try {
+        const users = await User.find().select('name age email');
+        res.json(users);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+      }
+}
+
+exports.verifyEmail = async(req, res) => {
+    try{
+        const token = req.query.token;
+        const user = await User.findOne({emailToken: token});
+        if(user){
+            user.emailToken = null;
+            user.isVerified = true;
+            await user.save();
+            res.status(200).json({
+                name: user.name,
+                verified: user.isVerified,
+                success: true
+            })
+        }else{
+            console.log("email is not verified")
+            res.status(400).json({
+                name: user.name,
+                verified: user.isVerified,
+                success: false
+            })
+        }
+    }catch(error){
+        console.log(error);
+    }
+        
 }

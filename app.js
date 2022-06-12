@@ -18,7 +18,7 @@ app.use(express.json());
 //template engine
 app.set('view engine', 'ejs');
 
-app.use('/', homeRoute);
-app.use('/user', userRoute);
+app.use('/api/upcloud', homeRoute);
+app.use('/api/upcloud/users', userRoute);
 
 module.exports = app;
